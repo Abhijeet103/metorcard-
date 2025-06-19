@@ -12,7 +12,10 @@ def main():
     Lines = f.readlines()
     //Add your code here to process the input commands
     """
-    with open("./sample_input/input1.txt" ,  "r") as file  :
+    if len(argv) != 2:
+        raise Exception("File path not entered")
+    file_path = argv[1]
+    with open(file_path ,  "r") as file  :
         for line in file  :
             arr =   line.split()
             if arr[0] == "BALANCE" :

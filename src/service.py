@@ -33,14 +33,16 @@ def check_in(mid  ,  type  ,  src) :
     station.add_passenger(type)
 
 
-def summary() :
-    central  =  stations['CENTRAL']
-    print(central.total_ammount)
-    print(central.discount)
-    print(central.passengerHistory)
-    airport  =  stations['AIRPORT']
-    print(airport.total_ammount)
-    print(airport.discount)
-    print(airport.passengerHistory)
+def summary():
+    for station_name in ['CENTRAL', 'AIRPORT']:
+        station = stations[station_name]
+
+        print(f"TOTAL_COLLECTION {station_name} {station.total_ammount}  {station.discount}")
+        print("PASSENGER_TYPE_SUMMARY")
+
+        # Sort passenger types alphabetically or as per your business rule (optional)
+        for passenger_type, count in station.passengerHistory.items():
+            print(f"{passenger_type} {count}")
+
 
 
