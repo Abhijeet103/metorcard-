@@ -38,15 +38,17 @@ def check_in(mid  ,  type  ,  src) :
 
 
 def summary():
+    output = []
     for station_name in ['CENTRAL', 'AIRPORT']:
         station = stations[station_name]
 
-        print(f"TOTAL_COLLECTION {station_name} {int(station.total_ammount)}  {int(station.discount)}")
-        print("PASSENGER_TYPE_SUMMARY")
-
+        output.append(f"TOTAL_COLLECTION {station_name} {int(station.total_ammount)} {int(station.discount)}")
+        output.append("PASSENGER_TYPE_SUMMARY")
 
         for passenger_type, count in sorted(station.passengerHistory.items()):
-            print(f"{passenger_type} {count}")
+            output.append(f"{passenger_type} {count}")
+
+    return "\n".join(output)
 
 
 

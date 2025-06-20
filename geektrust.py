@@ -23,7 +23,7 @@ def main():
             if arr[0] == "CHECK_IN" :
                 service.check_in(arr[1] , arr[2] , arr[3])
             if arr[0] == "PRINT_SUMMARY" :
-                service.summary()
+                print(service.summary())
 
     
 if __name__ == "__main__":
