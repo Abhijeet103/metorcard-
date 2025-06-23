@@ -13,22 +13,41 @@ class MetroCard :
         self.src =  src
 
 
-class Station  :
-    def __init__(self , name):
-        self.name  =  name
-        self.total_ammount = 0
-        self.discount  =  0
-        self.passengerHistory  =  defaultdict(int)
+from collections import defaultdict
 
+class Station:
+    def __init__(self, name):
+        self._name = name
+        self._total_amount = 0
+        self._discount = 0
+        self._passenger_history = defaultdict(int)
 
-    def add_ammount(self ,  x):
-        self.total_ammount+=x
+    @property
+    def name(self):
+        return self._name
 
-    def add_discount(self , x):
-        self.discount+=x
+    @property
+    def total_amount(self):
+        return self._total_amount
 
-    def add_passenger(self ,  type):
-        self.passengerHistory[type]+=1
+    @property
+    def discount(self):
+        return self._discount
+
+    @property
+    def passenger_history(self):
+        # Return a copy to avoid external modification
+        return dict(self._passenger_history)
+
+    def add_amount(self, x):
+        self._total_amount += x
+
+    def add_discount(self, x):
+        self._discount += x
+
+    def add_passenger(self, passenger_type):
+        self._passenger_history[passenger_type] += 1
+
 
 class Fare :
     rates = {
