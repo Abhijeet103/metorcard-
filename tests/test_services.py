@@ -1,17 +1,17 @@
 import pytest
-from src.repository import *
-from  src.model import *
-from src.service import *
+
+from src.model import MetroCard
+from src.service import MetroService
 
 
-
+metroService  = MetroService()
 # fixtures
 
 @pytest.fixture(autouse=True)
-def reset() :
-    metroCard.clear()
-    stations['CENTRAL'] =  Station('CENTRAL')
-    stations['AIRPORT'] = Station('AIRPORT')
+def reset():
+    global metroService
+    metroService = MetroService()
+
 @pytest.fixture
 def rate() :
     rates = {
@@ -24,33 +24,33 @@ def rate() :
 
 @pytest.fixture
 def  station_central() :
-    return stations['CENTRAL']
+    return  metroService.stations['CENTRAL']
 
 
 
 @pytest.fixture
 def station_airport() :
-    return  stations['AIRPORT']
+    return  metroService.stations['AIRPORT']
 
 
 @pytest.fixture
 def new_card():
     def _create(mid="MC1", balance=500):
         card = MetroCard(mid, balance)
-        metroCard[mid] = card
+        metroService.metroCard[mid] = card
         return card
     return _create
 
 def test_balance() :
-    balance("MC123" , 500 )
-    assert   "MC123" in metroCard
-    assert  metroCard["MC123"].balance == 500
+    metroService.create_card("MC123" , 500 )
+    assert   "MC123" in metroService.metroCard
+    assert  metroService.metroCard["MC123"].balance == 500
 
 
 
 def test_rechargeCard(new_card, station_central):
     card = new_card("MC2", 100)
-    rechargeCard(card, 200, "CENTRAL")
+    metroService.rechargeCard(card, 200, "CENTRAL")
 
     assert card.balance == 300
     assert station_central.total_ammount == 4
@@ -59,7 +59,7 @@ def test_rechargeCard(new_card, station_central):
 def test_check_in_single_trip(new_card, rate, station_central):
     card = new_card(mid="MC123", balance=500)
 
-    check_in("MC123", "ADULT", "CENTRAL")
+    metroService.check_in("MC123", "ADULT", "CENTRAL")
 
     assert card.balance == 300  # Fare = 200
     assert station_central.total_ammount == 200
@@ -70,11 +70,11 @@ def test_check_in_round_trip(new_card, station_airport , station_central):
     card = new_card(mid="MC1", balance=500)
 
 
-    check_in("MC1", "ADULT", "AIRPORT")
+    metroService.check_in("MC1", "ADULT", "AIRPORT")
     assert card.src == "AIRPORT"
 
 
-    check_in("MC1", "ADULT", "CENTRAL")
+    metroService.check_in("MC1", "ADULT", "CENTRAL")
 
     assert card.balance == 200
     assert station_central.discount == 100
@@ -86,13 +86,13 @@ def test_check_in_three_trips_with_round_trip(new_card, station_central ,  stati
     card = new_card(mid="MC5", balance=1000)
 
 
-    check_in("MC5", "ADULT", "AIRPORT")
+    metroService.check_in("MC5", "ADULT", "AIRPORT")
     assert card.src == "AIRPORT"
     assert station_airport.total_ammount == 200
     assert station_airport.passengerHistory["ADULT"] == 1
 
 
-    check_in("MC5", "ADULT", "CENTRAL")
+    metroService.check_in("MC5", "ADULT", "CENTRAL")
 
     assert station_central.discount == 100
     assert station_central.total_ammount == 100
@@ -100,7 +100,7 @@ def test_check_in_three_trips_with_round_trip(new_card, station_central ,  stati
     assert card.src is None
 
 
-    check_in("MC5", "ADULT", "CENTRAL")
+    metroService.check_in("MC5", "ADULT", "CENTRAL")
     assert card.src == "CENTRAL"
     assert station_central.total_ammount == 300  # 100 + 200
     assert station_central.passengerHistory["ADULT"] == 2
@@ -113,10 +113,10 @@ def test_summary_multiple_types(new_card):
     c1 = new_card("MC1", 300)
     c2 = new_card("MC2", 300)
 
-    check_in("MC1", "KID", "CENTRAL")
-    check_in("MC2", "ADULT", "CENTRAL")
+    metroService.check_in("MC1", "KID", "CENTRAL")
+    metroService.check_in("MC2", "ADULT", "CENTRAL")
 
-    result = summary()
+    result = metroService.summary()
 
     expected = (
         "TOTAL_COLLECTION CENTRAL 250 0\n"
@@ -139,12 +139,12 @@ def test_summary_passenger_order_sorted(new_card):
     c2 = new_card("MC2", 300)
     c3 = new_card("MC3", 300)
 
-    check_in("MC1", "KID", "CENTRAL")
-    check_in("MC2", "ADULT", "CENTRAL")
-    check_in("MC3", "SENIOR_CITIZEN", "CENTRAL")
+    metroService.check_in("MC1", "KID", "CENTRAL")
+    metroService.check_in("MC2", "ADULT", "CENTRAL")
+    metroService.check_in("MC3", "SENIOR_CITIZEN", "CENTRAL")
 
     # Act
-    result = summary()
+    result = metroService.summary()
 
     # Extract lines under CENTRAL's PASSENGER_TYPE_SUMMARY
     lines = result.splitlines()
