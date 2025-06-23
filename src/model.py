@@ -29,3 +29,18 @@ class Station  :
 
     def add_passenger(self ,  type):
         self.passengerHistory[type]+=1
+
+class Fare :
+    rates = {
+        "ADULT": 200,
+        "SENIOR_CITIZEN": 100,
+        "KID": 50
+    }
+
+    @classmethod
+    def get_fare(cls ,  type ,  is_round_trip):
+        base =  cls.rates[type]
+        if is_round_trip :
+            base /=2
+        return  base
+
